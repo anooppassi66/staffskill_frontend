@@ -1,0 +1,42 @@
+.login-page {
+  background-color: #f8f9fa;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 15px;
+  background: #fff;
+}
+
+.form-label {
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.input-group-text {
+  border-radius: 8px 0 0 8px !important;
+}
+
+.form-control {
+  border-radius: 0 8px 8px 0 !important;
+}
+
+.form-control:focus {
+  box-shadow: none;
+  border-color: #f14c57;
+}
+
+.btn-danger {
+  background-color: #f14c57;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-danger:hover {
+  background-color: #dc3545;
+}
+
+a.text-primary:hover {
+  text-decoration: underline;
+}
