@@ -93,6 +93,7 @@ export default function AdminLoginPage() {
             <Image src="/assets/learning.png" alt="Welcome to DreamsLMS" width={450} height={450} className="illustration" />
             <h2 className="welcome-title">Unlock Your Potential</h2>
             <p className="welcome-text">Begin your personalized learning journey today. Access world-class courses, track your progress, and achieve your professional goals seamlessly.</p>
+            <p>    Made With ❤️ by KKEYDOS</p>
           </div>
         </div>
         <div className="col-lg-6 col-12 d-flex justify-content-center align-items-center">

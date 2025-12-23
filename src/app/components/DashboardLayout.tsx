@@ -29,7 +29,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           <div className="p-3">
             <div className="header-blue p-3 d-flex justify-content-between align-items-center">
               <span className="text-white-50 small">© {new Date().getFullYear()} LMS</span>
-              <span className="text-white-50 small">Powered by Next.js</span>
+              {/* <span className="text-white-50 small">Powered by Next.js</span> */}
             </div>
           </div>
         </div>
