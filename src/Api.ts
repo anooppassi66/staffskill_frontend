@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:4000/api";
+const BASE_URL = "http://52.14.226.228:4000/api";
 const ROOT_URL = BASE_URL.replace(/\/api$/, "");
 
 export const APIS = {
