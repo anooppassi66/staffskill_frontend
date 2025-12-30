@@ -1,4 +1,4 @@
-const BASE_URL = "https://staffskills.us/api";
+const BASE_URL = "api.staffskills.us";
 const ROOT_URL = BASE_URL.replace(/\/api$/, "");
 
 export const APIS = {
