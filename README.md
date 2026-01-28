@@ -1,8 +1,27 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Environment Variables
+
+Create a `.env.local` file in the root directory and add the following environment variables for S3 uploads:
+
+```env
+NEXT_PUBLIC_AWS_REGION=us-east-1
+NEXT_PUBLIC_AWS_ACCESS_KEY_ID=your-access-key-id
+NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY=your-secret-access-key
+NEXT_PUBLIC_S3_BUCKET=your-bucket-name
+```
+
+**Note:** For security reasons, consider using pre-signed URLs or a backend service for S3 uploads in production instead of exposing AWS credentials in the frontend.
+
 ## Getting Started
 
-First, run the development server:
+First, install dependencies:
+
+```bash
+npm install
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev

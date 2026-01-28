@@ -12,6 +12,7 @@ import ReactSelect from '@/app/components/ui/ReactSelect'
 import MainLoader from '@/app/components/MainLoader'
 import RichTextEditor from '@/app/components/ui/RichTextEditor'
 import CenteredModal from '@/app/components/ui/CenteredModal'
+import { uploadToS3 } from '@/lib/s3Upload'
 import HtmlContent from '@/app/components/ui/HtmlContent'
 
 type CourseDoc = {
@@ -156,17 +157,42 @@ export default function ManageCoursePage() {
     let tId: any
     try {
       tId = toast.loading('Adding lesson...')
-      const fd = new FormData()
-      if (lessonName) fd.append('name', lessonName)
-      if (lessonDesc) fd.append('description', lessonDesc)
-      if (lessonFile) fd.append('video', lessonFile)
-      if (lessonThumb) fd.append('thumbnail', lessonThumb)
+
+      // Upload video and thumbnail to S3 if provided
+      let videoUrl = ''
+      let thumbnailUrl = ''
+
+      if (lessonFile) {
+        toast.update(tId, { render: 'Uploading video...' })
+        const uploadResult = await uploadToS3(lessonFile, undefined, `courses/${id}/lessons/videos/${Date.now()}-${lessonFile.name}`)
+        if (!uploadResult.success) {
+          throw new Error(uploadResult.error || 'Failed to upload video')
+        }
+        videoUrl = uploadResult.url || ''
+      }
+
+      if (lessonThumb) {
+        toast.update(tId, { render: 'Uploading thumbnail...' })
+        const uploadResult = await uploadToS3(lessonThumb, undefined, `courses/${id}/lessons/thumbnails/${Date.now()}-${lessonThumb.name}`)
+        if (!uploadResult.success) {
+          throw new Error(uploadResult.error || 'Failed to upload thumbnail')
+        }
+        thumbnailUrl = uploadResult.url || ''
+      }
+
+      const payload: any = {}
+      if (lessonName) payload.name = lessonName
+      if (lessonDesc) payload.description = lessonDesc
+      if (videoUrl) payload.video_url = videoUrl
+      if (thumbnailUrl) payload.thumbnail_url = thumbnailUrl
+
       const res = await fetch(ENDPOINTS.COURSES.ADD_LESSON(id, targetChapter), {
         method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
           ...(user.token ? { Authorization: `Bearer ${user.token}` } : {}),
         },
-        body: fd,
+        body: JSON.stringify(payload),
       })
       if (!res.ok) {
         const err = await res.json().catch(() => ({}))
@@ -200,18 +226,43 @@ export default function ManageCoursePage() {
     let tId: any
     try {
       tId = toast.loading('Updating lesson...')
-      const fd = new FormData()
-      if (editLessonName) fd.append('name', editLessonName)
-      if (editLessonDesc) fd.append('description', editLessonDesc)
-      if (editLessonFile) fd.append('video', editLessonFile)
-      if (editLessonThumb) fd.append('thumbnail', editLessonThumb)
+
+      // Upload new video and thumbnail to S3 if provided
+      let videoUrl = editLessonVideoUrl
+      let thumbnailUrl = editLessonThumbUrl
+
+      if (editLessonFile) {
+        toast.update(tId, { render: 'Uploading video...' })
+        const uploadResult = await uploadToS3(editLessonFile, undefined, `courses/${id}/lessons/videos/${Date.now()}-${editLessonFile.name}`)
+        if (!uploadResult.success) {
+          throw new Error(uploadResult.error || 'Failed to upload video')
+        }
+        videoUrl = uploadResult.url || ''
+      }
+
+      if (editLessonThumb) {
+        toast.update(tId, { render: 'Uploading thumbnail...' })
+        const uploadResult = await uploadToS3(editLessonThumb, undefined, `courses/${id}/lessons/thumbnails/${Date.now()}-${editLessonThumb.name}`)
+        if (!uploadResult.success) {
+          throw new Error(uploadResult.error || 'Failed to upload thumbnail')
+        }
+        thumbnailUrl = uploadResult.url || ''
+      }
+
+      const payload: any = {}
+      if (editLessonName) payload.name = editLessonName
+      if (editLessonDesc) payload.description = editLessonDesc
+      if (videoUrl) payload.video_url = videoUrl
+      if (thumbnailUrl) payload.thumbnail_url = thumbnailUrl
+
       const url = `${APIS.COURSES}/${id}/chapters/${editLesson.chapterId}/lessons/${editLesson.lessonId}`
       const res = await fetch(url, {
         method: 'PUT',
         headers: {
+          'Content-Type': 'application/json',
           ...(user.token ? { Authorization: `Bearer ${user.token}` } : {}),
         },
-        body: fd,
+        body: JSON.stringify(payload),
       })
       if (!res.ok) {
         const err = await res.json().catch(() => ({}))

@@ -7,6 +7,7 @@ import { ENDPOINTS } from '@/Api'
 import ReactSelect from '../components/ui/ReactSelect'
 import { toast } from 'react-toastify'
 import { useRouter } from 'next/navigation'
+import { uploadToS3 } from '@/lib/s3Upload'
 import RichTextEditor from '../components/ui/RichTextEditor'
 
 const CourseFormSteps: React.FC = () => {
@@ -50,21 +51,36 @@ const CourseFormSteps: React.FC = () => {
     let tId: any
     try {
       tId = toast.loading('Creating course...')
-      const fd = new FormData()
-      fd.append('title', title)
-      fd.append('category', category)
-      if (level) fd.append('level', level)
-      if (language) fd.append('language', language)
-      if (shortDesc) fd.append('short_description', shortDesc)
-      if (description) fd.append('description', description)
-      fd.append('status', 'published')
-      if (courseImage) fd.append('course_image', courseImage)
+
+      // Upload course image to S3 if provided
+      let courseImageUrl = ''
+      if (courseImage) {
+        toast.update(tId, { render: 'Uploading course image...' })
+        const uploadResult = await uploadToS3(courseImage, undefined, `courses/images/${Date.now()}-${courseImage.name}`)
+        if (!uploadResult.success) {
+          throw new Error(uploadResult.error || 'Failed to upload course image')
+        }
+        courseImageUrl = uploadResult.url || ''
+      }
+
+      const payload: any = {
+        title,
+        category,
+        status: 'published',
+      }
+      if (level) payload.level = level
+      if (language) payload.language = language
+      if (shortDesc) payload.short_description = shortDesc
+      if (description) payload.description = description
+      if (courseImageUrl) payload.course_image_url = courseImageUrl
+
       const res = await fetch(ENDPOINTS.COURSES.CREATE, {
         method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
           ...(user.token ? { Authorization: `Bearer ${user.token}` } : {}),
-        } as any,
-        body: fd,
+        },
+        body: JSON.stringify(payload),
       })
       if (!res.ok) {
         const err = await res.json().catch(() => ({}))
