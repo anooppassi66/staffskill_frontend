@@ -159,8 +159,8 @@ export default function ManageCoursePage() {
       tId = toast.loading('Adding lesson...')
 
       // Upload video and thumbnail to S3 if provided
-      let videoUrl = ''
-      let thumbnailUrl = ''
+      let videoKey = ''
+      let thumbnailKey = ''
 
       if (lessonFile) {
         toast.update(tId, { render: 'Uploading video...' })
@@ -168,7 +168,7 @@ export default function ManageCoursePage() {
         if (!uploadResult.success) {
           throw new Error(uploadResult.error || 'Failed to upload video')
         }
-        videoUrl = uploadResult.url || ''
+        videoKey = uploadResult.key || ''
       }
 
       if (lessonThumb) {
@@ -177,14 +177,14 @@ export default function ManageCoursePage() {
         if (!uploadResult.success) {
           throw new Error(uploadResult.error || 'Failed to upload thumbnail')
         }
-        thumbnailUrl = uploadResult.url || ''
+        thumbnailKey = uploadResult.key || ''
       }
 
       const payload: any = {}
       if (lessonName) payload.name = lessonName
       if (lessonDesc) payload.description = lessonDesc
-      if (videoUrl) payload.video_url = videoUrl
-      if (thumbnailUrl) payload.thumbnail_url = thumbnailUrl
+      if (videoKey) payload.video_url = videoKey
+      if (thumbnailKey) payload.thumbnail_url = thumbnailKey
 
       const res = await fetch(ENDPOINTS.COURSES.ADD_LESSON(id, targetChapter), {
         method: 'POST',
@@ -228,8 +228,8 @@ export default function ManageCoursePage() {
       tId = toast.loading('Updating lesson...')
 
       // Upload new video and thumbnail to S3 if provided
-      let videoUrl = editLessonVideoUrl
-      let thumbnailUrl = editLessonThumbUrl
+      let videoKey = ''
+      let thumbnailKey = ''
 
       if (editLessonFile) {
         toast.update(tId, { render: 'Uploading video...' })
@@ -237,7 +237,7 @@ export default function ManageCoursePage() {
         if (!uploadResult.success) {
           throw new Error(uploadResult.error || 'Failed to upload video')
         }
-        videoUrl = uploadResult.url || ''
+        videoKey = uploadResult.key || ''
       }
 
       if (editLessonThumb) {
@@ -246,14 +246,14 @@ export default function ManageCoursePage() {
         if (!uploadResult.success) {
           throw new Error(uploadResult.error || 'Failed to upload thumbnail')
         }
-        thumbnailUrl = uploadResult.url || ''
+        thumbnailKey = uploadResult.key || ''
       }
 
       const payload: any = {}
       if (editLessonName) payload.name = editLessonName
       if (editLessonDesc) payload.description = editLessonDesc
-      if (videoUrl) payload.video_url = videoUrl
-      if (thumbnailUrl) payload.thumbnail_url = thumbnailUrl
+      if (videoKey) payload.video_url = videoKey
+      if (thumbnailKey) payload.thumbnail_url = thumbnailKey
 
       const url = `${APIS.COURSES}/${id}/chapters/${editLesson.chapterId}/lessons/${editLesson.lessonId}`
       const res = await fetch(url, {

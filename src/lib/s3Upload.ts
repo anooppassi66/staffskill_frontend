@@ -12,7 +12,7 @@ const s3Client = new S3Client({
 
 export interface UploadResult {
   success: boolean;
-  url?: string;
+  key?: string;
   error?: string;
 }
 
@@ -47,10 +47,10 @@ export const uploadToS3 = async (
 
     const result = await upload.done();
 
-    if (result.Location) {
+    if (result) {
       return {
         success: true,
-        url: result.Location,
+        key: fileKey,
       };
     } else {
       return {

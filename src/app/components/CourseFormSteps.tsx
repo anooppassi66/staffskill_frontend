@@ -53,14 +53,14 @@ const CourseFormSteps: React.FC = () => {
       tId = toast.loading('Creating course...')
 
       // Upload course image to S3 if provided
-      let courseImageUrl = ''
+      let courseImageKey = ''
       if (courseImage) {
         toast.update(tId, { render: 'Uploading course image...' })
         const uploadResult = await uploadToS3(courseImage, undefined, `courses/images/${Date.now()}-${courseImage.name}`)
         if (!uploadResult.success) {
           throw new Error(uploadResult.error || 'Failed to upload course image')
         }
-        courseImageUrl = uploadResult.url || ''
+        courseImageKey = uploadResult.key || ''
       }
 
       const payload: any = {
@@ -72,7 +72,7 @@ const CourseFormSteps: React.FC = () => {
       if (language) payload.language = language
       if (shortDesc) payload.short_description = shortDesc
       if (description) payload.description = description
-      if (courseImageUrl) payload.course_image_url = courseImageUrl
+      if (courseImageKey) payload.course_image_url = courseImageKey
 
       const res = await fetch(ENDPOINTS.COURSES.CREATE, {
         method: 'POST',
